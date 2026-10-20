@@ -22,14 +22,30 @@ namespace KargoApi.Data
             });
             b.Entity<Shipment>(e =>
             {
-                e.ToTable("Shipments", "dbo", t => t.ExcludeFromMigrations());
+                e.ToTable("Shipments", "dbo");
                 e.Property(x => x.TrackingNo).HasMaxLength(20);
                 e.Property(x => x.SenderName).HasMaxLength(100);
                 e.Property(x => x.ReceiverCity).HasMaxLength(50);
                 e.Property(x => x.WeightKg).HasPrecision(6, 2);
+
                 e.HasOne(x => x.OriginBranch)
                  .WithMany()
                  .HasForeignKey(x => x.OriginBranchId);
+
+                e.HasIndex(x => x.TrackingNo)
+                 .IncludeProperties(x => new { x.Status, x.CreatedAt })
+                 .HasDatabaseName("IX_Shipments_TrackingNo_Covering");
+
+                e.HasIndex(x => new { x.ReceiverCity, x.CreatedAt })
+                 .IncludeProperties(x => x.TrackingNo)
+                 .HasDatabaseName("IX_Shipments_City_CreatedAt");
+
+                e.HasIndex(x => x.CreatedAt)
+                 .IncludeProperties(x => new { x.TrackingNo, x.Status })
+                 .HasDatabaseName("IX_Shipments_CreatedAt");
+
+                e.HasIndex(x => x.Status)
+                 .HasDatabaseName("IX_Shipments_Status");
             });
             b.Entity<SearchOutbox>(e =>
             {

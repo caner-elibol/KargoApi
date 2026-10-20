@@ -7,6 +7,7 @@ namespace KargoApi.Search;
 public class SearchOutboxWorker(
     IServiceScopeFactory scopeFactory,
     ElasticsearchClient es,
+    OutboxSignal signal,
     ILogger<SearchOutboxWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,7 +19,7 @@ public class SearchOutboxWorker(
                 var processed = await ProcessBatchAsync(stoppingToken);
 
                 if (processed == 0)
-                    await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                    await signal.WaitAsync(TimeSpan.FromSeconds(30), stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KargoApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261019191046_AddBranchRowVersion")]
-    partial class AddBranchRowVersion
+    [Migration("20261020103802_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,6 +64,34 @@ namespace KargoApi.Migrations
                     b.ToTable("Branches", "dbo");
                 });
 
+            modelBuilder.Entity("KargoApi.Entities.SearchOutbox", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSDATETIME()");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ShipmentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .HasDatabaseName("IX_SearchOutbox_Pending")
+                        .HasFilter("[ProcessedAt] IS NULL");
+
+                    b.ToTable("SearchOutbox", "dbo");
+                });
+
             modelBuilder.Entity("KargoApi.Entities.Shipment", b =>
                 {
                     b.Property<int>("Id")
@@ -105,12 +133,27 @@ namespace KargoApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Shipments_CreatedAt");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("CreatedAt"), new[] { "TrackingNo", "Status" });
+
                     b.HasIndex("OriginBranchId");
 
-                    b.ToTable("Shipments", "dbo", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Shipments_Status");
+
+                    b.HasIndex("TrackingNo")
+                        .HasDatabaseName("IX_Shipments_TrackingNo_Covering");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TrackingNo"), new[] { "Status", "CreatedAt" });
+
+                    b.HasIndex("ReceiverCity", "CreatedAt")
+                        .HasDatabaseName("IX_Shipments_City_CreatedAt");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ReceiverCity", "CreatedAt"), new[] { "TrackingNo" });
+
+                    b.ToTable("Shipments", "dbo");
                 });
 
             modelBuilder.Entity("KargoApi.Entities.Shipment", b =>

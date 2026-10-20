@@ -26,7 +26,7 @@ namespace KargoApi.Search
             SenderName = s.SenderName,
             ReceiverCity = s.ReceiverCity,
             OriginBranchId = s.OriginBranchId,
-            Status = s.Status,
+            Status = (byte)s.Status,
             WeightKg = s.WeightKg,
             CreatedAt = new DateTimeOffset(s.CreatedAt, TurkeyOffset),
             DeliveredAt = s.DeliveredAt is null

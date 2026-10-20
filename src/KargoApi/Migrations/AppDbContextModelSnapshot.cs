@@ -130,12 +130,27 @@ namespace KargoApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Shipments_CreatedAt");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("CreatedAt"), new[] { "TrackingNo", "Status" });
+
                     b.HasIndex("OriginBranchId");
 
-                    b.ToTable("Shipments", "dbo", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Shipments_Status");
+
+                    b.HasIndex("TrackingNo")
+                        .HasDatabaseName("IX_Shipments_TrackingNo_Covering");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TrackingNo"), new[] { "Status", "CreatedAt" });
+
+                    b.HasIndex("ReceiverCity", "CreatedAt")
+                        .HasDatabaseName("IX_Shipments_City_CreatedAt");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ReceiverCity", "CreatedAt"), new[] { "TrackingNo" });
+
+                    b.ToTable("Shipments", "dbo");
                 });
 
             modelBuilder.Entity("KargoApi.Entities.Shipment", b =>
