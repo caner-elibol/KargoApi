@@ -1,4 +1,4 @@
-namespace Kargo.Domain
+namespace Kargo.Infrastructure.Data
 {
     public class SearchOutbox
     {

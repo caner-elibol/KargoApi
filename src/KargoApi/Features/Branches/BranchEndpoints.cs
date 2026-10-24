@@ -1,4 +1,4 @@
-using KargoApi.Data;
+using Kargo.Infrastructure.Data;
 using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 

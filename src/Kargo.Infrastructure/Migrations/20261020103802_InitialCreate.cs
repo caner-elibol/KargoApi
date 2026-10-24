@@ -1,9 +1,10 @@
-﻿using System;
+using Kargo.Infrastructure.Data;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace KargoApi.Migrations
+namespace Kargo.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

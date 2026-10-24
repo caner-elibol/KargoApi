@@ -1,10 +1,12 @@
-﻿using Elastic.Clients.Elasticsearch;
-using KargoApi.Data;
+using Kargo.Application.Search;
+using Elastic.Clients.Elasticsearch;
+using Kargo.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace KargoApi.Search
+namespace Kargo.Infrastructure.Search
 {
-    public class ShipmentIndexer(AppDbContext db, ElasticsearchClient es, ILogger<ShipmentIndexer> logger)
+    public class ShipmentIndexer(AppDbContext db, ElasticsearchClient es, ILogger<ShipmentIndexer> logger) : IShipmentIndexer
     {
         public async Task<int> IndexAllAsync(string indexName, CancellationToken ct = default)
         {

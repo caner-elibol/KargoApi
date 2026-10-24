@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace KargoApi.Data.Extensions;
+namespace Kargo.Infrastructure.Data.Extensions;
 
 public static class DataServiceExtensions
 {

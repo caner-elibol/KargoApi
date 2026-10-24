@@ -1,7 +1,5 @@
-﻿using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Aggregations;
-using Elastic.Clients.Elasticsearch.QueryDsl;
-using KargoApi.Data;
+using Kargo.Application.Search;
+using Kargo.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -22,77 +20,43 @@ public static class SearchEndpoints
         return app;
     }
 
-    private static async Task<IResult> Ping(ElasticsearchClient es)
+    private static async Task<IResult> Ping(IShipmentSearch search, CancellationToken ct)
     {
-        var response = await es.PingAsync();
-        return response.IsValidResponse
-            ? Results.Ok("Elasticsearch bağlantısı tamam")
-            : Results.Problem(response.DebugInformation);
+        try
+        {
+            await search.PingAsync(ct);
+            return Results.Ok("Elasticsearch bağlantısı tamam");
+        }
+        catch (SearchUnavailableException ex)
+        {
+            return Results.Problem(ex.Message);
+        }
     }
-
     private static async Task<IResult> SearchShipments(
-        ElasticsearchClient es,
+        IShipmentSearch search,
         string? q,
         string? city,
         bool? delivered,
+        CancellationToken ct,
         int page = 1,
         int pageSize = 20)
     {
-        pageSize = Math.Clamp(pageSize, 1, 100);
-        page = Math.Max(page, 1);
+        var query = new ShipmentSearchQuery(
+            q, city, delivered,
+            Math.Max(page, 1),
+            Math.Clamp(pageSize, 1, 100));
 
-        var must = new List<Query>();
-        var filter = new List<Query>();
-        var mustNot = new List<Query>();
-
-        if (!string.IsNullOrWhiteSpace(q))
+        try
         {
-            must.Add(new MatchQuery("senderName")
-            {
-                Query = q,
-                Fuzziness = new Fuzziness("AUTO"),
-                Operator = Operator.And
-            });
+            return Results.Ok(await search.SearchAsync(query, ct));
         }
-
-        if (!string.IsNullOrWhiteSpace(city))
-            filter.Add(new TermQuery("receiverCity") { Value = city });
-
-        if (delivered == true)
-            filter.Add(new ExistsQuery { Field = "deliveredAt" });
-        else if (delivered == false)
-            mustNot.Add(new ExistsQuery { Field = "deliveredAt" });
-
-        var request = new SearchRequest("shipments")
+        catch (SearchUnavailableException ex)
         {
-            From = (page - 1) * pageSize,
-            Size = pageSize,
-            Query = new BoolQuery { Must = must, Filter = filter, MustNot = mustNot },
-            Aggregations = new Dictionary<string, Aggregation>
-            {
-                ["durumlar"] = new TermsAggregation { Field = "status" }
-            }
-        };
-
-        var response = await es.SearchAsync<ShipmentDocument>(request);
-
-        if (!response.IsValidResponse)
-            return Results.Problem(response.DebugInformation);
-
-        var hits = response.Hits
-            .Select(h => new ShipmentHit(h.Id!, h.Score, h.Source!))
-            .ToList();
-
-        var statusCounts = response.Aggregations?
-            .GetLongTerms("durumlar")?
-            .Buckets
-            .Select(b => new StatusCount(b.Key, b.DocCount))
-            .ToList() ?? new List<StatusCount>();
-
-        return Results.Ok(new ShipmentSearchResult(response.Total, hits, statusCounts));
+            return Results.Problem(ex.Message);
+        }
     }
 
-    private static async Task<IResult> Reindex(ShipmentIndexer indexer)
+    private static async Task<IResult> Reindex(IShipmentIndexer indexer)
     {
         var stopwatch = Stopwatch.StartNew();
         var total = await indexer.IndexAllAsync("shipments-v3");

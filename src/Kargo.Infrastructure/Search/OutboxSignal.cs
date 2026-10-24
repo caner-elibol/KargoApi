@@ -1,6 +1,6 @@
-﻿using System.Threading.Channels;
+using System.Threading.Channels;
 
-namespace KargoApi.Search;
+namespace Kargo.Infrastructure.Search;
 
 public class OutboxSignal
 {

@@ -1,4 +1,5 @@
-﻿namespace KargoApi.Search
+using Kargo.Application.Search;
+namespace KargoApi.Search
 {
     public record ShipmentHit(string Id, double? Score, ShipmentDocument Shipment);
 

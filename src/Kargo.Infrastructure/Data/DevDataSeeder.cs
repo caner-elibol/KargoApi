@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace KargoApi.Data
+namespace Kargo.Infrastructure.Data
 {
     public class DevDataSeeder
     {

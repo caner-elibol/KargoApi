@@ -1,7 +1,7 @@
 using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace KargoApi.Data
+namespace Kargo.Infrastructure.Data
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {

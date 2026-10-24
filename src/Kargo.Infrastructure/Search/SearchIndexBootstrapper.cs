@@ -1,7 +1,10 @@
-﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
-namespace KargoApi.Search
+namespace Kargo.Infrastructure.Search
 {
     public static class SearchIndexBootstrapper
     {

@@ -1,7 +1,7 @@
 using Kargo.Domain;
 using System.Text.Json.Serialization;
 
-namespace KargoApi.Search
+namespace Kargo.Application.Search
 {
     public class ShipmentDocument
     {

@@ -1,10 +1,11 @@
 using Elastic.Clients.Elasticsearch.Core.Search;
-using KargoApi.Data;
+using Kargo.Infrastructure.Data;
 using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
-namespace KargoApi.Search;
+namespace Kargo.Infrastructure.Search;
 
 public class SearchOutboxInterceptor(OutboxSignal signal, ILogger<SearchOutboxInterceptor> logger) : SaveChangesInterceptor
 {
