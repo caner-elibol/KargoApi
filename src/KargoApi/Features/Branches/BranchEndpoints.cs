@@ -1,5 +1,5 @@
-﻿using KargoApi.Data;
-using KargoApi.Entities;
+using KargoApi.Data;
+using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace KargoApi.Features.Branches

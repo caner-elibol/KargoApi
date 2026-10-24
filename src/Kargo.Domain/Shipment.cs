@@ -1,6 +1,6 @@
-﻿using KargoApi.Entities.Enums;
+using Kargo.Domain.Enums;
 
-namespace KargoApi.Entities
+namespace Kargo.Domain
 {
     public class Shipment: AggregateRoot
     {

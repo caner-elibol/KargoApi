@@ -1,4 +1,4 @@
-﻿using KargoApi.Entities;
+using Kargo.Domain;
 using System.Text.Json.Serialization;
 
 namespace KargoApi.Search

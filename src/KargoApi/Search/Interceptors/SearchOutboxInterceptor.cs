@@ -1,5 +1,6 @@
-﻿using KargoApi.Data;
-using KargoApi.Entities;
+using Elastic.Clients.Elasticsearch.Core.Search;
+using KargoApi.Data;
+using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -57,9 +58,10 @@ public class SearchOutboxInterceptor(OutboxSignal signal, ILogger<SearchOutboxIn
                 if (domainEvent is ShipmentStatusChanged changed)
                 {
                     db.SearchOutbox.Add(new SearchOutbox { ShipmentId = changed.ShipmentId });
-                    _hasNewOutboxEntries = true;
+                    _hasNewOutboxEntries = true; 
+}
                 }
-            }
+            
 
             aggregate.ClearDomainEvents();
         }

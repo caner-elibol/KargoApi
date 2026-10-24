@@ -1,6 +1,6 @@
-﻿using KargoApi.Data;
-using KargoApi.Entities;
-using KargoApi.Entities.Enums;
+using KargoApi.Data;
+using Kargo.Domain;
+using Kargo.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 

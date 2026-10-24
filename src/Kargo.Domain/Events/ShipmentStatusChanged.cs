@@ -1,5 +1,5 @@
-﻿using KargoApi.Entities.Enums;
+using Kargo.Domain.Enums;
 
-namespace KargoApi.Entities;
+namespace Kargo.Domain;
 
 public sealed record ShipmentStatusChanged(int ShipmentId, ShipmentStatus NewStatus) : IDomainEvent;

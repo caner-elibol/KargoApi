@@ -1,4 +1,4 @@
-﻿namespace KargoApi.Entities
+namespace Kargo.Domain
 {
     public class Branch
     {

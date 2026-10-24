@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
-namespace KargoApi.Entities;
+namespace Kargo.Domain;
 
 public sealed partial record TrackingNumber
 {

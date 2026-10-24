@@ -1,4 +1,4 @@
-﻿using KargoApi.Entities;
+using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace KargoApi.Data

@@ -1,4 +1,4 @@
-﻿namespace KargoApi.Entities.Enums;
+namespace Kargo.Domain.Enums;
 
 public enum ShipmentStatus : byte
 {

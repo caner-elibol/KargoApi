@@ -1,6 +1,6 @@
-﻿using KargoApi.Data;
-using KargoApi.Entities;
-using KargoApi.Entities.Enums;
+using KargoApi.Data;
+using Kargo.Domain;
+using Kargo.Domain.Enums;
 using KargoApi.Features.Branches;
 using KargoApi.Features.Shipments;
 using KargoApi.Search;
