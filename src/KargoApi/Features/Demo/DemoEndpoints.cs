@@ -2,6 +2,7 @@
 using KargoApi.Entities;
 using KargoApi.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace KargoApi.Features.Demo;
 
@@ -31,17 +32,13 @@ public static class DemoEndpoints
             var branch = await db.Branches.FirstAsync(b => b.Id == 1);
             branch.Name = "Kadıköy Şube - TEST";
             await db.SaveChangesAsync();
-
-            db.Shipments.Add(new Shipment
-            {
-                TrackingNo = "EF001",
-                SenderName = "Test",
-                ReceiverCity = "Ankara",
-                OriginBranchId = originBranchId,
-                Status = ShipmentStatus.Accepted,
-                WeightKg = 1m,
-                CreatedAt = DateTime.Now
-            });
+            db.Shipments.Add(Shipment.Create(
+    trackingNo: new TrackingNumber(RegexGenerator.GenerateValidString()),
+    senderName: "Test",
+    receiverCity: "Ankara",
+    originBranchId: originBranchId,
+    weightKg: 1m,
+    createdAt: DateTime.Now));
             await db.SaveChangesAsync();
 
             await tx.CommitAsync();
@@ -83,4 +80,33 @@ public class StatusStats
 {
     public int Adet { get; set; }
     public decimal? ToplamKg { get; set; }
+}
+
+public class RegexGenerator
+{
+    private static readonly Random _random = new();
+
+    public static string GenerateValidString()
+    {
+        StringBuilder builder = new();
+
+        // 1. İlk 2 karakter için rastgele büyük harf (A-Z) üret
+        for (int i = 0; i < 2; i++)
+        {
+            char letter = (char)_random.Next('A', 'Z' + 1);
+            builder.Append(letter);
+        }
+
+        // 2. 3 ile 18 arasında rastgele bir uzunluk belirle (üst sınır dahil olması için 19)
+        int digitLength = _random.Next(3, 19);
+
+        // 3. Belirlenen uzunlukta rastgele rakam (0-9) üret
+        for (int i = 0; i < digitLength; i++)
+        {
+            int digit = _random.Next(0, 10);
+            builder.Append(digit);
+        }
+
+        return builder.ToString();
+    }
 }

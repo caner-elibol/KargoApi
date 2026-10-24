@@ -2,29 +2,53 @@
 
 namespace KargoApi.Entities
 {
-    public class Shipment
+    public class Shipment: AggregateRoot
     {
         public int Id { get; set; }
-        public string TrackingNo { get; set; } = null!;
+        public TrackingNumber TrackingNo { get; private set; } = null!;
         public string SenderName { get; set; } = null!;
         public string ReceiverCity { get; set; } = null!;
         public int OriginBranchId { get; set; }
         public Branch OriginBranch { get; set; } = null!;
-        public ShipmentStatus Status { get; set; }
+        public ShipmentStatus Status { get; private set; }
         public decimal WeightKg { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime? DeliveredAt { get; set; }
+        public DateTime? DeliveredAt { get; private set; }
+        public static Shipment Create(
+            TrackingNumber trackingNo,
+            string senderName,
+            string receiverCity,
+            int originBranchId,
+            decimal weightKg,
+            DateTime createdAt)
+        {
+            if (weightKg <= 0)
+                throw new DomainException("Gönderi ağırlığı sıfırdan büyük olmalı.");
+
+            return new Shipment
+            {
+                TrackingNo = trackingNo,
+                SenderName = senderName,
+                ReceiverCity = receiverCity,
+                OriginBranchId = originBranchId,
+                WeightKg = weightKg,
+                CreatedAt = createdAt,
+                Status = ShipmentStatus.Accepted
+            };
+        }
 
         public void StartTransit()
         {
             EnsureCanTransitionTo(ShipmentStatus.InTransit);
             Status = ShipmentStatus.InTransit;
+            AddDomainEvent(new ShipmentStatusChanged(Id, Status));
         }
 
         public void SendOutForDelivery()
         {
             EnsureCanTransitionTo(ShipmentStatus.OutForDelivery);
             Status = ShipmentStatus.OutForDelivery;
+            AddDomainEvent(new ShipmentStatusChanged(Id, Status));
         }
 
         public void MarkAsDelivered(DateTime deliveredAt)
@@ -32,27 +56,30 @@ namespace KargoApi.Entities
             EnsureCanTransitionTo(ShipmentStatus.Delivered);
             Status = ShipmentStatus.Delivered;
             DeliveredAt = deliveredAt;
+            AddDomainEvent(new ShipmentStatusChanged(Id, Status));
         }
 
         public void Return()
         {
             EnsureCanTransitionTo(ShipmentStatus.Returned);
             Status = ShipmentStatus.Returned;
+            AddDomainEvent(new ShipmentStatusChanged(Id, Status));
         }
 
         public void MarkAsLost()
         {
             EnsureCanTransitionTo(ShipmentStatus.Lost);
             Status = ShipmentStatus.Lost;
+            AddDomainEvent(new ShipmentStatusChanged(Id, Status));
         }
 
         private void EnsureCanTransitionTo(ShipmentStatus target)
         {
             var allowed = Status switch
             {
-                ShipmentStatus.Accepted => new[] { ShipmentStatus.InTransit, ShipmentStatus.Lost },
-                ShipmentStatus.InTransit => new[] { ShipmentStatus.OutForDelivery, ShipmentStatus.Returned, ShipmentStatus.Lost },
-                ShipmentStatus.OutForDelivery => new[] { ShipmentStatus.Delivered, ShipmentStatus.InTransit, ShipmentStatus.Returned, ShipmentStatus.Lost },
+                ShipmentStatus.Accepted => [ShipmentStatus.InTransit, ShipmentStatus.Lost],
+                ShipmentStatus.InTransit => [ShipmentStatus.OutForDelivery, ShipmentStatus.Returned, ShipmentStatus.Lost],
+                ShipmentStatus.OutForDelivery => [ShipmentStatus.Delivered, ShipmentStatus.InTransit, ShipmentStatus.Returned, ShipmentStatus.Lost],
                 _ => Array.Empty<ShipmentStatus>()
             };
 

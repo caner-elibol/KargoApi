@@ -5,6 +5,7 @@ namespace KargoApi.Data
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
+
         public DbSet<Branch> Branches => Set<Branch>();
         public DbSet<Shipment> Shipments => Set<Shipment>();
         public DbSet<SearchOutbox> SearchOutbox => Set<SearchOutbox>();
@@ -23,10 +24,11 @@ namespace KargoApi.Data
             b.Entity<Shipment>(e =>
             {
                 e.ToTable("Shipments", "dbo");
-                e.Property(x => x.TrackingNo).HasMaxLength(20);
+                e.Property(s => s.TrackingNo).HasConversion(t => t.Value,v => new TrackingNumber(v)).HasMaxLength(20);
                 e.Property(x => x.SenderName).HasMaxLength(100);
                 e.Property(x => x.ReceiverCity).HasMaxLength(50);
                 e.Property(x => x.WeightKg).HasPrecision(6, 2);
+                e.Ignore(s => s.DomainEvents);
 
                 e.HasOne(x => x.OriginBranch)
                  .WithMany()

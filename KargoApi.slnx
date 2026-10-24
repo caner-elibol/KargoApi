@@ -3,6 +3,9 @@
     <File Path=".env" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Kargo.Application/Kargo.Application.csproj" />
+    <Project Path="src/Kargo.Domain/Kargo.Domain.csproj" />
+    <Project Path="src/Kargo.Infrastructure/Kargo.Infrastructure.csproj" />
     <Project Path="src/KargoApi/KargoApi.csproj" />
   </Folder>
   <Project Path="docker-compose.dcproj">

@@ -1,4 +1,5 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace KargoApi.Search.Extensions;
 
@@ -13,6 +14,7 @@ public static class SearchServiceExtensions
                 new ElasticsearchClientSettings(
                     new Uri(configuration["Elasticsearch:Url"]!))));
 
+        services.AddScoped<ISaveChangesInterceptor, SearchOutboxInterceptor>();
         services.AddScoped<ShipmentIndexer>();
         services.AddSingleton<OutboxSignal>();
         services.AddHostedService<SearchOutboxWorker>();

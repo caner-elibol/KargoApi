@@ -22,7 +22,7 @@ namespace KargoApi.Search
         public static ShipmentDocument From(Shipment s) => new()
         {
             Id = s.Id,
-            TrackingNo = s.TrackingNo,
+            TrackingNo = s.TrackingNo.Value,
             SenderName = s.SenderName,
             ReceiverCity = s.ReceiverCity,
             OriginBranchId = s.OriginBranchId,
