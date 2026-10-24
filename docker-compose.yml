@@ -39,7 +39,9 @@ services:
       - elasticsearch
 
   api:
-    build: ./src/KargoApi
+    build:
+      context: ./src
+      dockerfile: KargoApi/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: "Server=mssql,1433;Database=KargoDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
@@ -51,7 +53,6 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
-
 volumes:
   mssql-data:
   es-data:

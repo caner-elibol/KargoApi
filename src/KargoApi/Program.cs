@@ -1,10 +1,10 @@
 using KargoApi;
-using KargoApi.Data;
-using KargoApi.Data.Extensions;
+using Kargo.Infrastructure.Data;
+using Kargo.Infrastructure.Data.Extensions;
 using KargoApi.Features.Branches;
 using KargoApi.Features.Shipments;
 using KargoApi.Search;
-using KargoApi.Search.Extensions;
+using Kargo.Infrastructure.Search.Extensions;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddPersistence(builder.Configuration, builder.Environment)
     .AddSearch(builder.Configuration)
+    .AddProblemDetails()
     .ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 

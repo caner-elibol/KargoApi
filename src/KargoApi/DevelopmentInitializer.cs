@@ -1,4 +1,5 @@
-using KargoApi.Data;
+using Kargo.Infrastructure.Data;
+using Kargo.Infrastructure.Search;
 using KargoApi.Features.Demo;
 using KargoApi.Search;
 using Microsoft.EntityFrameworkCore;
