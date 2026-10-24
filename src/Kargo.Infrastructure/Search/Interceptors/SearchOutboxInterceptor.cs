@@ -4,10 +4,11 @@ using Kargo.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Kargo.Domain.Events;
 
-namespace Kargo.Infrastructure.Search;
+namespace Kargo.Infrastructure.Search.Interceptors;
 
-public class SearchOutboxInterceptor(OutboxSignal signal, ILogger<SearchOutboxInterceptor> logger) : SaveChangesInterceptor
+public class SearchOutboxInterceptor(OutboxSignal signal) : SaveChangesInterceptor
 {
     private bool _hasNewOutboxEntries;
 

@@ -1,5 +1,4 @@
-using Kargo.Infrastructure.Data;
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -40,7 +39,7 @@ namespace Kargo.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ShipmentId = table.Column<int>(type: "int", nullable: false),
+                    ShipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSDATETIME()"),
                     ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -54,8 +53,7 @@ namespace Kargo.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TrackingNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     SenderName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ReceiverCity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),

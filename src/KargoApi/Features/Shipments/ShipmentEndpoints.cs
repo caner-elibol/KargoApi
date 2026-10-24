@@ -70,8 +70,7 @@ namespace KargoApi.Features.Shipments
 
             return result is null ? Results.NotFound() : Results.Ok(result);
 
-        }
-        
+        }        
 
         private static async Task<IResult> UpdateStatus(
     int id, byte status, AppDbContext db)

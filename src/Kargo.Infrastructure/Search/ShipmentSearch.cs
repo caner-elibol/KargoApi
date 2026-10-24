@@ -63,7 +63,7 @@ public class ShipmentSearch(ElasticsearchClient es) : IShipmentSearch
             .GetLongTerms("durumlar")?
             .Buckets
             .Select(b => new StatusCount(b.Key, b.DocCount))
-            .ToList() ?? new List<StatusCount>();
+            .ToList() ?? [];
 
         return new ShipmentSearchResult(response.Total, hits, statusCounts);
     }

@@ -1,10 +1,11 @@
 using Kargo.Domain.Enums;
+using Kargo.Domain.Events;
 
 namespace Kargo.Domain
 {
     public class Shipment: AggregateRoot
     {
-        public int Id { get; set; }
+        public Guid Id { get; private set; }
         public TrackingNumber TrackingNo { get; private set; } = null!;
         public string SenderName { get; set; } = null!;
         public string ReceiverCity { get; set; } = null!;
@@ -24,9 +25,9 @@ namespace Kargo.Domain
         {
             if (weightKg <= 0)
                 throw new DomainException("Gönderi ağırlığı sıfırdan büyük olmalı.");
-
-            return new Shipment
+            var shipment = new Shipment
             {
+                Id = Guid.CreateVersion7(),
                 TrackingNo = trackingNo,
                 SenderName = senderName,
                 ReceiverCity = receiverCity,
@@ -35,6 +36,8 @@ namespace Kargo.Domain
                 CreatedAt = createdAt,
                 Status = ShipmentStatus.Accepted
             };
+            shipment.AddDomainEvent(new ShipmentStatusChanged(shipment.Id, shipment.Status));
+            return shipment;
         }
 
         public void StartTransit()

@@ -11,14 +11,14 @@ namespace Kargo.Infrastructure.Search
         public async Task<int> IndexAllAsync(string indexName, CancellationToken ct = default)
         {
             const int batchSize = 5000;
-            var lastId = 0;
+            var lastId = Guid.Empty; 
             var total = 0;
 
             while (true)
             {
                 var batch = await db.Shipments
                     .AsNoTracking()
-                    .Where(s => s.Id > lastId)
+                    .Where(s => s.Id.CompareTo(lastId) > 0)
                     .OrderBy(s => s.Id)
                     .Take(batchSize)
                     .ToListAsync(ct);

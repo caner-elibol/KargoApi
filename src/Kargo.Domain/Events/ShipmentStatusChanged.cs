@@ -1,5 +1,5 @@
 using Kargo.Domain.Enums;
 
-namespace Kargo.Domain;
+namespace Kargo.Domain.Events;
 
-public sealed record ShipmentStatusChanged(int ShipmentId, ShipmentStatus NewStatus) : IDomainEvent;
+public sealed record ShipmentStatusChanged(Guid ShipmentId, ShipmentStatus NewStatus) : IDomainEvent;

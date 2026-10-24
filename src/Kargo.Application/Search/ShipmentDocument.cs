@@ -6,7 +6,7 @@ namespace Kargo.Application.Search
     public class ShipmentDocument
     {
         [JsonIgnore]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string TrackingNo { get; set; } = null!;
         public string SenderName { get; set; } = null!;

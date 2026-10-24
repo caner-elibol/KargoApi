@@ -1,5 +1,7 @@
 using Elastic.Clients.Elasticsearch;
 using Kargo.Application.Search;
+using Kargo.Infrastructure.Search.Interceptors;
+using Kargo.Infrastructure.Search.Workers;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

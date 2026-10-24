@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Kargo.Infrastructure.Search;
+namespace Kargo.Infrastructure.Search.Workers;
 
 public class SearchOutboxWorker(
     IServiceScopeFactory scopeFactory,
