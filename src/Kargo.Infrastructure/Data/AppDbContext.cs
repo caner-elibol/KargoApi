@@ -36,7 +36,8 @@ namespace Kargo.Infrastructure.Data
 
                 e.HasIndex(x => x.TrackingNo)
                  .IncludeProperties(x => new { x.Status, x.CreatedAt })
-                 .HasDatabaseName("IX_Shipments_TrackingNo_Covering");
+                 .HasDatabaseName("IX_Shipments_TrackingNo_Covering")
+                 .IsUnique();
 
                 e.HasIndex(x => new { x.ReceiverCity, x.CreatedAt })
                  .IncludeProperties(x => x.TrackingNo)

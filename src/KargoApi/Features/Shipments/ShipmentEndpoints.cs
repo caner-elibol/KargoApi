@@ -79,11 +79,18 @@ namespace KargoApi.Features.Shipments
 
         private static async Task<IResult> Create(CreateShipmentRequest req, AppDbContext db)
         {
+
             if (!TrackingNumber.TryCreate(req.TrackingNo, out var trackingNo, out var error))
                 return Results.Problem(
                     title: "Geçersiz İstek",
                     detail: error,
                     statusCode: StatusCodes.Status400BadRequest);
+
+            if (await db.Shipments.AnyAsync(s => s.TrackingNo == trackingNo))
+                return Results.Problem(
+                    title: "Çakışma oldu",
+                    detail: "Bu takip numarası atanamaz.",
+                    statusCode: StatusCodes.Status409Conflict);
 
             if (!await db.Branches.AnyAsync(b => b.Id == req.OriginBranchId))
                 return Results.Problem(

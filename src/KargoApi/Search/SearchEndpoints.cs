@@ -13,12 +13,19 @@ public static class SearchEndpoints
 
         var group = app.MapGroup("/search").WithTags("Search");
 
+        group.MapPost("/reconcile", Reconcile);
         group.MapGet("/shipments", SearchShipments);
         group.MapPost("/reindex", Reindex);
         group.MapGet("/sql", SearchSql);
 
         return app;
     }
+    private static async Task<IResult> Reconcile(
+    ISearchReconciler reconciler,
+    CancellationToken ct,
+    bool dryRun = true,
+    int maxFixes = 50_000)
+    => Results.Ok(await reconciler.ReconcileAsync(dryRun, maxFixes, ct));
 
     private static async Task<IResult> Ping(IShipmentSearch search, CancellationToken ct)
     {

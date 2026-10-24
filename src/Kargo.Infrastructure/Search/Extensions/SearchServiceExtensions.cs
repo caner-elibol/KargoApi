@@ -23,6 +23,7 @@ public static class SearchServiceExtensions
         services.AddScoped<IShipmentSearch, ShipmentSearch>();
         services.AddScoped<ISaveChangesInterceptor, SearchOutboxInterceptor>();
         services.AddScoped<ShipmentIndexer>();
+        services.AddScoped<ISearchReconciler, ShipmentReconciler>();
 
 
         services.AddSingleton<OutboxSignal>();

@@ -111,6 +111,7 @@ namespace Kargo.Infrastructure.Migrations
                         .HasDatabaseName("IX_Shipments_Status");
 
                     b.HasIndex("TrackingNo")
+                        .IsUnique()
                         .HasDatabaseName("IX_Shipments_TrackingNo_Covering");
 
                     SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TrackingNo"), new[] { "Status", "CreatedAt" });

@@ -76,6 +76,23 @@ public class SearchOutboxWorker(
                 throw new InvalidOperationException($"Elasticsearch güncellenemedi: {reason}");
             }
         }
+        var foundIds = shipments.Select(s => s.Id).ToHashSet();
+        var deletedIds = shipmentIds
+            .Where(id => !foundIds.Contains(id))
+            .Select(id => id.ToString())
+            .ToList();
+
+        if (deletedIds.Count > 0)
+        {
+            var del = await es.BulkAsync(b => b
+                .Index("shipments")
+                .DeleteMany(deletedIds, (op, id) => op.Id(id)), ct);
+
+            var failed = del.ItemsWithErrors.FirstOrDefault(i => i.Status != 404);
+            if (!del.IsValidResponse || failed is not null)
+                throw new InvalidOperationException(
+                    $"Elasticsearch silme başarısız: {failed?.Error?.Reason ?? del.DebugInformation}");
+        }
 
         // 4. Kayıtları işlendi olarak işaretle
         var outboxIds = pending.Select(o => o.Id).ToList();
