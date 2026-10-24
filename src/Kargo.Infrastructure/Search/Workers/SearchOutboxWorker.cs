@@ -44,6 +44,7 @@ public class SearchOutboxWorker(
 
         // 1. Bekleyen kayıtları al
         var pending = await db.SearchOutbox
+            .AsNoTracking()
             .Where(o => o.ProcessedAt == null)
             .OrderBy(o => o.Id)
             .Take(500)

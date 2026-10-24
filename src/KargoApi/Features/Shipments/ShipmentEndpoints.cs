@@ -1,9 +1,10 @@
-using Kargo.Infrastructure.Data;
 using Kargo.Domain;
 using Kargo.Domain.Enums;
+using Kargo.Infrastructure.Data;
 using KargoApi.Features.Branches;
 using KargoApi.Features.Shipments;
 using KargoApi.Search;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -16,9 +17,10 @@ namespace KargoApi.Features.Shipments
             var group = app.MapGroup("/shipments").WithTags("Shipments");
 
             group.MapGet("/", GetPage);
+            group.MapPost("/", Create);
             group.MapGet("/{trackingNo}", GetByTrackingNo);
             group.MapGet("/{trackingNo}/status", GetStatus);
-            group.MapPut("/{id:int}/status", UpdateStatus);
+            group.MapPut("/{id:guid}/status", UpdateStatus);
 
             return app;
         }
@@ -70,7 +72,35 @@ namespace KargoApi.Features.Shipments
 
             return result is null ? Results.NotFound() : Results.Ok(result);
 
-        }        
+        }
+        public record CreateShipmentRequest(
+    string TrackingNo, string SenderName, string ReceiverCity,
+    int OriginBranchId, decimal WeightKg);
+
+        private static async Task<IResult> Create(CreateShipmentRequest req, AppDbContext db)
+        {
+            if (!TrackingNumber.TryCreate(req.TrackingNo, out var trackingNo, out var error))
+                return Results.Problem(
+                    title: "Geçersiz İstek",
+                    detail: error,
+                    statusCode: StatusCodes.Status400BadRequest);
+
+            if (!await db.Branches.AnyAsync(b => b.Id == req.OriginBranchId))
+                return Results.Problem(
+                    title: "Geçersiz İstek",
+                    detail: "Şube bulunamadı.",
+                    statusCode: StatusCodes.Status400BadRequest);
+
+            var shipment = Shipment.Create(
+                trackingNo, req.SenderName, req.ReceiverCity,
+                req.OriginBranchId, req.WeightKg, DateTime.UtcNow);
+
+            db.Shipments.Add(shipment);
+            await db.SaveChangesAsync();
+
+            return Results.Created($"/shipments/{shipment.TrackingNo.Value}",
+                new { shipment.Id, TrackingNo = shipment.TrackingNo.Value });
+        }
 
         private static async Task<IResult> UpdateStatus(
     int id, byte status, AppDbContext db)
@@ -122,5 +152,4 @@ namespace KargoApi.Features.Shipments
             });
         }
     }
-
 }
